@@ -1,7 +1,7 @@
 <template>
   <div v-if="product">
     <div class="hidden" id="skuHolder" :data-value="sku"></div>
-    <!-- <div class="hidden" id="cartIdHolder" :data-value="me.activeCart.id"></div>> -->
+    <div class="hidden" id="cartIdHolder" :data-value="me.activeCart.id"></div>>
     <div class="hidden" id="countryHolder" :data-value="$store.state.country"></div>>
 
     <div data-test="product-gallery"
@@ -149,7 +149,6 @@ export default {
       query: gql`
         query me {
           me {
-            id
             activeCart {
               id
             }
