@@ -198,8 +198,8 @@ export default {
 
 };
 
-// const domain = 'https://medusa.mousetrap.tech';
-const domain = 'http://localhost:3001';
+const domain = 'https://medusa.mousetrap.tech';
+// const domain = 'http://localhost:3001';
 
 $(document).on('click', '#serviceOptions', () => {
   const sku = $('#skuHolder').data('value');
