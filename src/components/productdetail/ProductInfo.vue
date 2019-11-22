@@ -1,5 +1,9 @@
 <template>
   <div v-if="product">
+    <div class="hidden" id="skuHolder" :data-value="sku"></div>
+    <div class="hidden" id="cartIdHolder" :data-value="me.activeCart.id"></div>>
+    <div class="hidden" id="countryHolder" :data-value="$store.state.country"></div>>
+
     <div data-test="product-gallery"
          class="col-md-4 col-md-offset-1 col-sm-6 product-gallery">
       <ProductGallery :sku="sku" />
@@ -45,7 +49,8 @@
       <AddToCartForm :sku="sku"/>
 
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"> -->
+<button type="button" class="btn btn-primary" data-toggle="modal" id='serviceOptions'>
   Service Options
 </button>
 
@@ -54,20 +59,15 @@
   aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
       <div class="modal-body">
-        <iframe :src="pntURL" width="600"
+        <!-- <iframe id="pntFrame" :src="pntURL" width="600" -->
+        <iframe id="pntFrame" width="600"
           height="400" frameborder="0" allowtransparency="true">
         </iframe>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-primary" id="sendMessage">Save changes</button>
       </div>
     </div>
   </div>
@@ -89,6 +89,7 @@
 <script>
 import gql from 'graphql-tag';
 import productMixin from '@/mixins/productMixin';
+import cartMixin from '@/mixins/cartMixin';
 import ProductGallery from './ProductGallery.vue';
 import SocialMediaLinks from './SocialMediaLinks.vue';
 import DetailsSection from './DetailsSection.vue';
@@ -114,6 +115,7 @@ export default {
   },
 
   data: () => ({
+    me: null,
     product: null,
   }),
 
@@ -121,14 +123,22 @@ export default {
     matchingVariant() {
       return this.currentProduct.variant || {};
     },
-    pntURL() {
-      return `https://medusa.mousetrap.tech/tiffany-price-and-time-guide?sku=${this.sku}&locale=${this.$store.state.country}`;
-    },
   },
 
-  mixins: [productMixin],
+  mixins: [productMixin, cartMixin],
 
   apollo: {
+    me: {
+      query: gql`
+        query me {
+          me {
+            activeCart {
+              id
+            }
+          }
+        }
+      `,
+    },
     product: {
       query: gql`
         query Product($locale: Locale!, $sku: String!, $currency: Currency!) {
@@ -170,6 +180,30 @@ export default {
   },
 
 };
+
+const domain = 'https://medusa.mousetrap.tech';
+$(document).on('click', '#serviceOptions', () => {
+  const sku = $('#skuHolder').data('value');
+  const cartId = $('#cartIdHolder').data('value');
+  const country = $('#countryHolder').data('value');
+
+  const frameURL = `${domain}/tiffany-price-and-time-guide?sku=${sku}&locale=${country}&cartId=${cartId}`;
+  $('#pntFrame').prop('src', frameURL);
+  $('#exampleModal').modal('show');
+});
+
+$(document).on('show.bs.modal', '#exampleModal', () => {
+  const receiver = document.getElementById('pntFrame').contentWindow;
+  setTimeout(() => { receiver.postMessage('addToCart', domain); }, 1000);
+});
+
+window.addEventListener('message', (event) => {
+  console.log(`message ${JSON.stringify(event.data)}`);
+  if (event.data.cart) {
+    $('#exampleModal').modal('hide');
+    window.location.reload();
+  }
+}, false);
 </script>
 
 <i18n>
