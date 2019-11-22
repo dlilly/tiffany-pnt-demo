@@ -122,7 +122,7 @@ export default {
       return this.currentProduct.variant || {};
     },
     pntURL() {
-      return `http://medusa.mousetrap.tech/tiffany-price-and-time-guide?sku=${this.sku}&locale=${this.$store.state.country}`;
+      return `https://medusa.mousetrap.tech/tiffany-price-and-time-guide?sku=${this.sku}&locale=${this.$store.state.country}`;
     },
   },
 
