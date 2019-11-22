@@ -67,7 +67,6 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="sendMessage">Save changes</button>
       </div>
     </div>
   </div>
@@ -181,7 +180,9 @@ export default {
 
 };
 
-const domain = 'https://medusa.mousetrap.tech';
+// const domain = 'https://medusa.mousetrap.tech';
+const domain = 'http://localhost:3001';
+
 $(document).on('click', '#serviceOptions', () => {
   const sku = $('#skuHolder').data('value');
   const cartId = $('#cartIdHolder').data('value');
