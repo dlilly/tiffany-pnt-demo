@@ -1,7 +1,7 @@
 <template>
   <div v-if="product">
     <div class="hidden" id="skuHolder" :data-value="sku"></div>
-    <div class="hidden" id="cartIdHolder" :data-value="me.activeCart.id"></div>>
+    <!-- <div class="hidden" id="cartIdHolder" :data-value="me.activeCart.id"></div>> -->
     <div class="hidden" id="countryHolder" :data-value="$store.state.country"></div>>
 
     <div data-test="product-gallery"
@@ -126,11 +126,30 @@ export default {
 
   mixins: [productMixin, cartMixin],
 
+  methods: {
+    async addLineItem() {
+      if (!this.cartExists) {
+        await this.createMyCart({
+          currency: this.$store.state.currency,
+          country: this.$store.state.country,
+          shippingAddress: { country: this.$store.state.country },
+        });
+      }
+      // return this.updateMyCart({
+      //   addLineItem: {
+      //     sku: this.sku,
+      //     quantity: this.form.quantity,
+      //   },
+      // }).then(() => this.$store.dispatch('openMiniCart'));
+    },
+  },
+
   apollo: {
     me: {
       query: gql`
         query me {
           me {
+            id
             activeCart {
               id
             }
@@ -205,6 +224,15 @@ window.addEventListener('message', (event) => {
     window.location.reload();
   }
 }, false);
+
+//       if (!this.cartExists) {
+//         console.log(`hi`)
+// // await this.createMyCart({
+//         //   currency: this.$store.state.currency,
+//         //   country: this.$store.state.country,
+//         //   shippingAddress: { country: this.$store.state.country },
+//         // });
+//       }
 </script>
 
 <i18n>
