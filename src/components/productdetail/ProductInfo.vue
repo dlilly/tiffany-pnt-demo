@@ -1,8 +1,8 @@
 <template>
   <div v-if="product">
-    <div class="hidden" id="skuHolder" :data-value="sku"></div>
-    <div class="hidden" id="cartIdHolder" :data-value="me.activeCart.id"></div>>
-    <div class="hidden" id="countryHolder" :data-value="$store.state.country"></div>>
+    <div id="skuHolder" :data-value="sku">SKU: {{ sku }}</div>
+    <!-- <div id="cartIdHolder" :data-value="activeCartId">Cart ID: {{ activeCartId }}</div> -->
+    <div class="hidden" id="countryHolder" :data-value="$store.state.country"></div>
 
     <div data-test="product-gallery"
          class="col-md-4 col-md-offset-1 col-sm-6 product-gallery">
@@ -97,6 +97,15 @@ import BasePrice from '../common/BasePrice.vue';
 import VariantSelector from './VariantSelector.vue';
 
 export default {
+  mounted() {
+    window.addEventListener('message', (event) => {
+      if (event.data.sku) {
+        $('#exampleModal').modal('hide');
+        this.addLineItem({ sku: event.data.sku, quantity: 1 });
+      }
+    }, false);
+  },
+
   components: {
     DetailsSection,
     ProductGallery,
@@ -114,7 +123,6 @@ export default {
   },
 
   data: () => ({
-    me: null,
     product: null,
   }),
 
@@ -127,7 +135,7 @@ export default {
   mixins: [productMixin, cartMixin],
 
   methods: {
-    async addLineItem() {
+    async addLineItem(opts = {}) {
       if (!this.cartExists) {
         await this.createMyCart({
           currency: this.$store.state.currency,
@@ -135,27 +143,16 @@ export default {
           shippingAddress: { country: this.$store.state.country },
         });
       }
-      // return this.updateMyCart({
-      //   addLineItem: {
-      //     sku: this.sku,
-      //     quantity: this.form.quantity,
-      //   },
-      // }).then(() => this.$store.dispatch('openMiniCart'));
+      return this.updateMyCart({
+        addLineItem: {
+          sku: opts.sku || this.sku,
+          quantity: opts.quantity || this.form.quantity,
+        },
+      }).then(() => this.$store.dispatch('openMiniCart'));
     },
   },
 
   apollo: {
-    me: {
-      query: gql`
-        query me {
-          me {
-            activeCart {
-              id
-            }
-          }
-        }
-      `,
-    },
     product: {
       query: gql`
         query Product($locale: Locale!, $sku: String!, $currency: Currency!) {
@@ -195,11 +192,10 @@ export default {
       },
     },
   },
-
 };
 
-const domain = 'https://medusa.mousetrap.tech';
-// const domain = 'http://localhost:3001';
+const domain = 'https://scaffold.sales.us-central1.gcp.ct-app.com';
+// let domain = 'http://localhost:3001';
 
 $(document).on('click', '#serviceOptions', () => {
   const sku = $('#skuHolder').data('value');
@@ -216,22 +212,6 @@ $(document).on('show.bs.modal', '#exampleModal', () => {
   setTimeout(() => { receiver.postMessage('addToCart', domain); }, 1000);
 });
 
-window.addEventListener('message', (event) => {
-  console.log(`message ${JSON.stringify(event.data)}`);
-  if (event.data.cart) {
-    $('#exampleModal').modal('hide');
-    window.location.reload();
-  }
-}, false);
-
-//       if (!this.cartExists) {
-//         console.log(`hi`)
-// // await this.createMyCart({
-//         //   currency: this.$store.state.currency,
-//         //   country: this.$store.state.country,
-//         //   shippingAddress: { country: this.$store.state.country },
-//         // });
-//       }
 </script>
 
 <i18n>
