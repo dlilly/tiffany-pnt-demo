@@ -1,6 +1,6 @@
 <template>
   <div v-if="product">
-    <div id="skuHolder" :data-value="sku">SKU: {{ sku }}</div>
+    <div class="hidden" id="skuHolder" :data-value="sku">SKU: {{ sku }}</div>
     <!-- <div id="cartIdHolder" :data-value="activeCartId">Cart ID: {{ activeCartId }}</div> -->
     <div class="hidden" id="countryHolder" :data-value="$store.state.country"></div>
 
