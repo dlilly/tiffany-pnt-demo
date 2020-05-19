@@ -194,7 +194,7 @@ export default {
   },
 };
 
-const domain = 'https://scaffold.sales.us-central1.gcp.ct-app.com';
+const domain = 'https://blueprint.sales.us-central1.gcp.ct-app.com/price-and-time-guide';
 // let domain = 'http://localhost:3001';
 
 $(document).on('click', '#serviceOptions', () => {
@@ -202,7 +202,7 @@ $(document).on('click', '#serviceOptions', () => {
   const cartId = $('#cartIdHolder').data('value');
   const country = $('#countryHolder').data('value');
 
-  const frameURL = `${domain}/tiffany-price-and-time-guide?sku=${sku}&locale=${country}&cartId=${cartId}`;
+  const frameURL = `${domain}/price-and-time-guide/?sku=${sku}&locale=${country}&cartId=${cartId}`;
   $('#pntFrame').prop('src', frameURL);
   $('#exampleModal').modal('show');
 });
